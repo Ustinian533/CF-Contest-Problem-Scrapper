@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { Command } = require('commander');
 const contestDetails = require('./src/contestDetails.js');
 const chalk = require('chalk');
