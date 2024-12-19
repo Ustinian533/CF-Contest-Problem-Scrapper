@@ -30,4 +30,4 @@ To install and set up the CF-Contest-Problem-Scrapper, follow these steps:
 To use the CF-Contest-Problem-Scrapper, run the following command:
 
 ```sh
-node script.js
+node script.js id <contestId>
