@@ -1,13 +1,13 @@
 {
   "name": "cf-contest",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "\"# CF-Contest-Problem-Scrapper\"",
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["codeforces contest problem scrapper", "problem", "contest", "codeforces"],
+  "author": "manish-dev",
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.2",
