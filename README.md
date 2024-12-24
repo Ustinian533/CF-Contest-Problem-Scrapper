@@ -1,6 +1,6 @@
 # CF-Contest-Problem-Scrapper
 
-CF-Contest-Problem-Scrapper is a JavaScript-based tool designed to scrape contest problems from Codeforces. This tool helps users to collect and organize problems from various contests for easy access and analysis.
+CF-Contest-Problem-Scrapper is a JavaScript-based tool designed to scrape contest problems from Codeforces During the Contest. This tool helps users to collect and organize problems from various contests for easy access and analysis.
 
 ## Features
 
@@ -12,7 +12,11 @@ CF-Contest-Problem-Scrapper is a JavaScript-based tool designed to scrape contes
 To use the CF-Contest-Problem-Scrapper, run the following command:
 
 ```sh
-npm cf-contest id <contestId>
+npx cf-contest id <contestId>
+```
+
+```example
+npx cf-contest id 2026
 ```
 
 # Folder Structure for Contest
