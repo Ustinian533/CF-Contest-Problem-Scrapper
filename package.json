@@ -1,6 +1,6 @@
 {
   "name": "cf-contest",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "\"# CF-Contest-Problem-Scrapper\"",
   "main": "script.js",
   "scripts": {

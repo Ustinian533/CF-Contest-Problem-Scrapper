@@ -1,7 +1,7 @@
 const date = new Date();
 
 const code = `/**
- *    author:  manish-dev
+ *    author: 
  *    created: ${date}
 **/
 #include <bits/stdc++.h>
