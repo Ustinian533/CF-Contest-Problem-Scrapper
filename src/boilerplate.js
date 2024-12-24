@@ -28,6 +28,10 @@ void solve(){
 signed main() {
     ios_base::sync_with_stdio(false); 
     cin.tie(NULL);
+    #ifndef ONLINE_JUDGE
+    freopen("input.in", "r", stdin);
+    freopen("output.out", "w", stdout);
+    #endif
     int tst = 1;
     cin >> tst;
     while (tst--) {
