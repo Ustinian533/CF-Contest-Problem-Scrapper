@@ -40,7 +40,8 @@ async function contestDetails(contestId) {
 
         await fs.writeFile(directoryPath + '/inputf.in', problem.inputExample);
 
-        await fs.writeFile(directoryPath + '/outputf.out', problem.outputExample.join('\n'));
+        await fs.writeFile(directoryPath + '/expected.out', problem.outputExample.join('\n'));
+        await fs.writeFile(directoryPath + '/outputf.out', "");
 
         await fs.writeFile(directoryPath + '/solution.cpp', boilerPlate);
 
@@ -48,7 +49,7 @@ async function contestDetails(contestId) {
         console.log(chalk.grey(msg));
     }
     console.clear();
-    const msg = `Successfully Fetched Problem Details \n Successfully Created the Folder Structure for ${contestName}`;
+    const msg = `Successfully Fetched Problem Details \nSuccessfully Created the Folder Structure for ${contestName}`;
     console.log(chalk.green(msg));
 }
 module.exports = contestDetails;

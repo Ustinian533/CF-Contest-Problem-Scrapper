@@ -6,28 +6,58 @@ CF-Contest-Problem-Scrapper is a JavaScript-based tool designed to scrape contes
 
 - Scrape contest problems from Codeforces.
 - Organize and save problem data in a structured format.
-- Easy to use and integrate into other projects.
-
-## Installation
-
-To install and set up the CF-Contest-Problem-Scrapper, follow these steps:
-
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/manish-gkv/CF-Contest-Problem-Scrapper.git
-    ```
-2. Navigate to the project directory:
-    ```sh
-    cd CF-Contest-Problem-Scrapper
-    ```
-3. Install the required dependencies:
-    ```sh
-    npm install
-    ```
 
 ## Usage
 
 To use the CF-Contest-Problem-Scrapper, run the following command:
 
 ```sh
-node script.js id <contestId>
+npm cf-contest id <contestId>
+```
+
+# Folder Structure for Contest
+
+Below is the folder structure for organizing contest problems and their respective files.
+
+```
+contest-name/
+│
+├── A/
+│   ├── input.in
+│   ├── output.out
+│   ├── expected.out
+│   ├── problemstatement.txt
+│   └── solution.cpp
+│
+├── B/
+│   ├── input.in
+│   ├── output.out
+│   ├── expected.out
+│   ├── problemstatement.txt
+│   └── solution.cpp
+│
+├── C/
+│   ├── input.in
+│   ├── output.out
+│   ├── expected.out
+│   ├── problemstatement.txt
+│   └── solution.cpp
+│
+└── ...
+```
+
+## Explanation
+1. **`contest-name/`**  
+   The root folder representing the name of the contest.  
+
+2. **`A/`, `B/`, `C/`**  
+   Subdirectories named after individual contest problems.  
+
+3. **Files in Each Problem Directory**  
+   - **`input.in`**: The input file for the problem.  
+   - **`output.out`**: The generated output after running the solution.  
+   - **`expected.out`**: The expected correct output for comparison.  
+   - **`problemstatement.txt`**: The text file containing the problem statement.  
+   - **`solution.cpp`**: The solution code written in C++.  
+
+Add additional problem folders as needed using the same structure (`D/`, `E/`, etc.).  
