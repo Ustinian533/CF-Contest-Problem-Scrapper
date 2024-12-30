@@ -1,7 +1,7 @@
 const date = new Date();
 
 const code = `/**
- *    author: 
+ *    author: manish-dev
  *    created: ${date}
 **/
 #include <bits/stdc++.h>
@@ -23,15 +23,12 @@ using namespace std;
 long long MOD = 1e9 + 7;
 
 void solve(){
+    
 }
 
 signed main() {
     ios_base::sync_with_stdio(false); 
     cin.tie(NULL);
-    #ifndef ONLINE_JUDGE
-    freopen("input.in", "r", stdin);
-    freopen("output.out", "w", stdout);
-    #endif
     int tst = 1;
     cin >> tst;
     while (tst--) {

@@ -14,7 +14,7 @@ async function contestDetails(contestId) {
     const $ = cheerio.load(result);
     const problemList =[];
     const set = new Set();
-    const contestName = $('.rtable .left').first().text().trim();
+    const contestName = $('.rtable .left').first().text().trim().replace(':',"");
     console.log(chalk.yellow(contestName));
     await fs.mkdir('./'+contestName, { recursive: true });
     $('select[name="submittedProblemIndex"] option').each((index, element) => {
@@ -40,8 +40,8 @@ async function contestDetails(contestId) {
 
         await fs.writeFile(directoryPath + '/inputf.in', problem.inputExample);
 
-        await fs.writeFile(directoryPath + '/expected.out', problem.outputExample.join('\n'));
-        await fs.writeFile(directoryPath + '/outputf.out', "");
+        await fs.writeFile(directoryPath + '/expectedf.out', problem.outputExample.join('\n'));
+        await fs.writeFile(directoryPath + '/outputf.out', " ");
 
         await fs.writeFile(directoryPath + '/solution.cpp', boilerPlate);
 
