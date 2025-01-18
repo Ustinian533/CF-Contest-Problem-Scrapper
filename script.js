@@ -4,20 +4,35 @@ const { Command } = require('commander');
 const contestDetails = require('./src/contestDetails.js');
 const chalk = require('chalk');
 const program = new Command();
+const readline = require('node:readline');
 
-program
-    .command('id <id>')
-    .description('CodeForces Contest ID')
-    .alias('ID')
-    .alias('Id')
-    .alias('iD')
-    .action((contestId) => {
-        const id = parseInt(contestId);
-        if (!isNaN(id)) {
-            contestDetails(id);
-        } else {
-            const e = "Error : " + contestId +" is Not a Valid Contest ID";
-            console.log(chalk.red(e));
+const question = [`Enter Contest ID : `, `Your Name :- `];
+let userName = "";
+let id = 0;
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+
+function askQuestion(index) {
+    if(index===1){
+        rl.question(question[index], (name)=>{
+            userName = name;
+            rl.close();
+            contestDetails(id, name);
+        });
+        return;
+    }
+    rl.question(question[index], (Id)=>{
+        Id = parseInt(Id);
+        if (isNaN(Id)){
+            console.log(chalk.red("Invalid Contest ID"));
+            askQuestion(index);
+        }
+        else{
+            id = Id;
+            askQuestion(index+1);
         }
     });
-program.parse(process.argv);
+}
+askQuestion(0);

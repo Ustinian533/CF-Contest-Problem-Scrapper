@@ -4,7 +4,7 @@ const boilerPlate = require('./boilerplate.js');
 const getProblemDetails = require('./problemDetails.js');
 const chalk = require('chalk');
 
-async function contestDetails(contestId) {
+async function contestDetails(contestId, name) {
     let result = await fetch("https://codeforces.com/contest/"+contestId)
         .then((res) => {
             if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
@@ -43,7 +43,7 @@ async function contestDetails(contestId) {
         await fs.writeFile(directoryPath + '/expectedf.out', problem.outputExample.join('\n'));
         await fs.writeFile(directoryPath + '/outputf.out', " ");
 
-        await fs.writeFile(directoryPath + '/solution.cpp', boilerPlate);
+        await fs.writeFile(directoryPath + '/solution.cpp', boilerPlate(name));
 
         const msg = `Created directory and files for PROBLEM ${problemList[i].value}`;
         console.log(chalk.grey(msg));

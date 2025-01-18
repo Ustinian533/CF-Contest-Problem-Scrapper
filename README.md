@@ -11,12 +11,16 @@ CF-Contest-Problem-Scrapper is a JavaScript-based tool designed to scrape contes
 
 To use the CF-Contest-Problem-Scrapper, run the following command:
 
+##### cmd :
 ```sh
-npx cf-contest id <contestId>
+npx cf-contest
 ```
 
-```example
-npx cf-contest id 2026
+##### Example : 
+```
+npx cf-contest
+Enter Contest ID : 2026        //contest-id available in contest URL
+Your Name :- manish-dev        //name
 ```
 
 # Folder Structure for Contest

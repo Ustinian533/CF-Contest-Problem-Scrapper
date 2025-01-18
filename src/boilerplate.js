@@ -1,7 +1,9 @@
 const date = new Date();
 
-const code = `/**
- *    author: manish-dev
+
+function boilerPlate(name){
+    return `/**
+ *    author: ${name}
  *    created: ${date}
 **/
 #include <bits/stdc++.h>
@@ -29,6 +31,10 @@ void solve(){
 signed main() {
     ios_base::sync_with_stdio(false); 
     cin.tie(NULL);
+    #ifndef ONLINE_JUDGE 
+    freopen("inputf.in", "r", stdin); 
+    freopen("outputf.out", "w", stdout); 
+    #endif
     int tst = 1;
     cin >> tst;
     while (tst--) {
@@ -37,4 +43,5 @@ signed main() {
     return 0;
 }`;
 
-module.exports = code;
+}
+module.exports = boilerPlate;
