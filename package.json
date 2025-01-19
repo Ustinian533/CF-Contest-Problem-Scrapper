@@ -4,18 +4,25 @@
   "description": "\"# CF-Contest-Problem-Scrapper\"",
   "main": "script.js",
   "bin": {
-  "cf-contest": "./script.js"
+    "cf-contest": "./script.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["codeforces contest problem scrapper", "problem", "contest", "codeforces", "cf"],
+  "keywords": [
+    "codeforces contest problem scrapper",
+    "problem",
+    "contest",
+    "codeforces",
+    "cf"
+  ],
   "author": "manish-dev",
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "commander": "^12.1.0",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "node-fetch": "^3.3.2"
   }
 }

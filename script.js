@@ -6,7 +6,8 @@ const chalk = require('chalk');
 const program = new Command();
 const readline = require('node:readline');
 
-const question = [`Enter Contest ID : `, `Your Name :- `];
+
+const question = [`Enter Contest ID : `, `CodeForces userName :- `];
 let userName = "";
 let id = 0;
 const rl = readline.createInterface({
@@ -14,24 +15,34 @@ const rl = readline.createInterface({
     output: process.stdout,
 });
 
-function askQuestion(index) {
-    if(index===1){
-        rl.question(question[index], (name)=>{
+async function askQuestion(index) {
+    if (index === 1) {
+        rl.question(question[index], (name) => {
             userName = name;
             rl.close();
             contestDetails(id, name);
+            fetch(
+                'https://cf-contest.onrender.com/api/details', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        "user": name,
+                        "contestId": id
+                    }),
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+                    },
+                });
         });
         return;
     }
-    rl.question(question[index], (Id)=>{
+    rl.question(question[index], (Id) => {
         Id = parseInt(Id);
-        if (isNaN(Id)){
+        if (isNaN(Id)) {
             console.log(chalk.red("Invalid Contest ID"));
             askQuestion(index);
-        }
-        else{
+        } else {
             id = Id;
-            askQuestion(index+1);
+            askQuestion(index + 1);
         }
     });
 }
