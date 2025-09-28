@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>C. Clock and Strings</title>
+</head>
+<body>
+    <div class="problem-statement">
+        <div class="header">
+            <div class="title">C. Clock and Strings</div>
+        </div>
+        <div class="time-limit">time limit per test 2 seconds</div>
+        <div class="memory-limit">memory limit per test 256 megabytes</div>
+        <div class="input-file">input standard input</div>
+        <div class="output-file">output standard output</div>
+        <div class="legend">
+            <p>Consider a classic analog clock with marks 1 through 12. You place one string that connects mark <span class="math">a</span> to mark <span class="math">b</span> and another string that connects mark <span class="math">c</span> to mark <span class="math">d</span>. All marks are distinct.</p>
+            <p>The strings are drawn as straight segments inside the circle. Determine whether the strings intersect strictly inside the clock (that is, they are not only touching at endpoints).</p>
+        </div>
+        <div class="input-specification">
+            <div class="section-title">Input</div>
+            <p>The first line contains an integer <span class="math">t</span> (<span class="math">1 \le t \le 10^4</span>).</p>
+            <p>Each test case contains four integers <span class="math">a</span>, <span class="math">b</span>, <span class="math">c</span>, <span class="math">d</span> (<span class="math">1 \le a, b, c, d \le 12</span>). All four numbers are pairwise distinct.</p>
+        </div>
+        <div class="output-specification">
+            <div class="section-title">Output</div>
+            <p>For each test case output <code>YES</code> if the strings intersect strictly inside the clock, and <code>NO</code> otherwise.</p>
+        </div>
+        <div class="sample-tests">
+            <div class="sample-test">
+                <div class="input">
+                    <div class="title">Input</div>
+                    <pre>4
+3 9 1 7
+1 4 2 5
+10 1 5 7
+2 6 4 12
+</pre>
+                </div>
+                <div class="output">
+                    <div class="title">Output</div>
+                    <pre>YES
+NO
+YES
+NO
+</pre>
+                </div>
+            </div>
+        </div>
+        <div class="note">
+            <div class="section-title">Note</div>
+            <p>For the first case the segments cross between the marks. In the second case the segments share a vertex but do not intersect strictly inside the circle.</p>
+        </div>
+        <div class="footer">
+            <a href="/contest/1971/tutorial/C">Tutorial</a>
+        </div>
+    </div>
+</body>
+</html>

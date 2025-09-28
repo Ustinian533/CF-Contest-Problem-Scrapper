@@ -1,55 +1,175 @@
 const cheerio = require('cheerio');
 const fs = require('fs/promises');
-const boilerPlate = require('./boilerplate.js');
-const getProblemDetails = require('./problemDetails.js');
+const path = require('path');
 const chalk = require('chalk');
+const getProblemDetails = require('./problemDetails');
 
-async function contestDetails(contestId, name) {
-    let result = await fetch("https://codeforces.com/contest/"+contestId)
-        .then((res) => {
-            if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-            return res.text();
+function sanitizePathSegment(name) {
+    return name.replace(/[\\/:*?"<>|]/g, '-').trim();
+}
+
+function createFetcher({ baseUrl, offlineDir }) {
+    return async function fetchPage(resourcePath, meta = {}) {
+        if (offlineDir) {
+            const localFile = resolveOfflinePath(offlineDir, resourcePath, meta);
+            return fs.readFile(localFile, 'utf8');
+        }
+
+        const url = resourcePath.startsWith('http') ? resourcePath : `${baseUrl.replace(/\/$/, '')}${resourcePath}`;
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'cf-contest-problem-scraper/1.0',
+            },
         });
-    //console.log(result);
-    const $ = cheerio.load(result);
-    const problemList =[];
-    const set = new Set();
-    const contestName = $('.rtable .left').first().text().trim().replace(':',"");
-    console.log(chalk.yellow(contestName));
-    await fs.mkdir('./'+contestName, { recursive: true });
-    $('select[name="submittedProblemIndex"] option').each((index, element) => {
-        const value = $(element).attr('value');
-        const name = $(element).text().trim();
-        if (value && !set.has(value) && value.length <= 2) {
-            set.add(value);
-            problemList.push({ value, name });
+        if (!response.ok) {
+            throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+        }
+        return response.text();
+    };
+}
+
+function resolveOfflinePath(rootDir, resourcePath, meta) {
+    if (meta.kind === 'contest') {
+        return path.join(rootDir, 'contest.html');
+    }
+
+    if (meta.kind === 'problem') {
+        return path.join(rootDir, `problem_${meta.index}.html`);
+    }
+
+    if (meta.kind === 'tutorial') {
+        return path.join(rootDir, `tutorial_${meta.index}.html`);
+    }
+
+    const normalized = resourcePath.replace(/[\\/:*?"<>|]/g, '_');
+    return path.join(rootDir, normalized);
+}
+
+async function contestDetails(contestId, options) {
+    const { baseUrl = 'https://codeforces.com', offlineDir, outputDir = 'output', verbose } = options || {};
+    const fetchPage = createFetcher({ baseUrl, offlineDir });
+
+    const contestHtml = await fetchPage(`/contest/${contestId}`, { kind: 'contest' });
+    const $ = cheerio.load(contestHtml);
+    const contestName = $('.rtable .left').first().text().trim().replace(/:\s*$/, '') || `Contest ${contestId}`;
+    const problems = [];
+
+    $('table.problems tr').each((_, row) => {
+        const index = $(row).find('td').first().text().trim().split('\n')[0].trim();
+        const name = $(row).find('td').eq(1).text().trim();
+        if (index && name) {
+            problems.push({ index, name });
         }
     });
 
-    for (let i = 0; i < problemList.length; i++) {
-        const problem = await getProblemDetails(contestId, problemList[i].value);
-        const directoryPath = './' + contestName + '/' + problemList[i].value;
-
-        await fs.mkdir(directoryPath, { recursive: true });
-
-
-        let problemStatement ="Problem Statement :-\n\n" + problem.problemStatement + "\n\n\n" + "Input Specification :-\n\n" + problem.inputSpecification + "\n\n\n" + "Output Specification :-\n\n" + problem.outputSpecification + "\n\n\n" + "Input Example :-\n\n" + problem.inputExample + "\n\n\n" + "Output Specification :-\n\n" + problem.outputExample.join('\n');
-
-
-        await fs.writeFile(directoryPath + '/problemStatement.txt', problemStatement);
-
-        await fs.writeFile(directoryPath + '/inputf.in', problem.inputExample);
-
-        await fs.writeFile(directoryPath + '/expectedf.out', problem.outputExample.join('\n'));
-        await fs.writeFile(directoryPath + '/outputf.out', " ");
-
-        await fs.writeFile(directoryPath + '/solution.cpp', boilerPlate(name));
-
-        const msg = `Created directory and files for PROBLEM ${problemList[i].value}`;
-        console.log(chalk.grey(msg));
+    if (!problems.length) {
+        throw new Error('No problems found on contest page.');
     }
-    console.clear();
-    const msg = `Successfully Fetched Problem Details \nSuccessfully Created the Folder Structure for ${contestName}`;
-    console.log(chalk.green(msg));
+
+    const contestFolder = path.join(outputDir, `${contestId}-${sanitizePathSegment(contestName)}`);
+    await fs.mkdir(contestFolder, { recursive: true });
+
+    const summary = [];
+
+    for (const problem of problems) {
+        const logPrefix = `${problem.index} ${problem.name}`;
+        verbose && console.log(chalk.cyan(`Fetching ${logPrefix}`));
+        const details = await getProblemDetails(fetchPage, contestId, problem.index);
+        const fileName = `${problem.index}-${sanitizePathSegment(details.title).toLowerCase().replace(/\s+/g, '-')}.md`;
+        const filePath = path.join(contestFolder, fileName);
+        await fs.writeFile(filePath, renderMarkdown(contestName, contestId, problem, details));
+        summary.push({
+            index: problem.index,
+            name: problem.name,
+            file: filePath,
+            hasTutorial: Boolean(details.tutorialMarkdown),
+        });
+        console.log(chalk.green(`Saved ${problem.index} -> ${path.relative(process.cwd(), filePath)}`));
+    }
+
+    return { contestName, contestFolder, summary };
 }
+
+function renderMarkdown(contestName, contestId, problem, details) {
+    const lines = [];
+    lines.push(`# ${problem.index}. ${details.title}`);
+    lines.push('');
+    lines.push(`- Contest: ${contestName} (${contestId})`);
+    if (details.timeLimit) lines.push(`- ${details.timeLimit}`);
+    if (details.memoryLimit) lines.push(`- ${details.memoryLimit}`);
+    if (details.inputFile) lines.push(`- ${details.inputFile}`);
+    if (details.outputFile) lines.push(`- ${details.outputFile}`);
+    lines.push('');
+
+    if (details.statementMarkdown) {
+        lines.push('## Problem Statement');
+        lines.push('');
+        lines.push(details.statementMarkdown);
+        lines.push('');
+    }
+
+    if (details.inputMarkdown) {
+        lines.push('## Input');
+        lines.push('');
+        lines.push(details.inputMarkdown);
+        lines.push('');
+    }
+
+    if (details.outputMarkdown) {
+        lines.push('## Output');
+        lines.push('');
+        lines.push(details.outputMarkdown);
+        lines.push('');
+    }
+
+    if (details.samples && details.samples.length) {
+        lines.push('## Sample Tests');
+        lines.push('');
+        for (const sample of details.samples) {
+            lines.push(`### Sample ${sample.index}`);
+            lines.push('');
+            lines.push('**Input**');
+            lines.push('');
+            lines.push('```text');
+            lines.push(sample.input);
+            lines.push('```');
+            lines.push('');
+            lines.push('**Output**');
+            lines.push('');
+            lines.push('```text');
+            lines.push(sample.output);
+            lines.push('```');
+            lines.push('');
+            if (sample.explanation) {
+                lines.push('**Explanation**');
+                lines.push('');
+                lines.push(sample.explanation);
+                lines.push('');
+            }
+        }
+    }
+
+    if (details.noteMarkdown) {
+        lines.push('## Note');
+        lines.push('');
+        lines.push(details.noteMarkdown);
+        lines.push('');
+    }
+
+    if (details.tutorialMarkdown) {
+        lines.push('## Tutorial');
+        lines.push('');
+        lines.push(details.tutorialMarkdown);
+        lines.push('');
+    } else {
+        lines.push('## Tutorial');
+        lines.push('');
+        lines.push('_Tutorial link was not found on the problem page._');
+        lines.push('');
+    }
+
+    return lines.join('\n');
+}
+
 module.exports = contestDetails;
+
