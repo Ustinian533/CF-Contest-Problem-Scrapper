@@ -1,71 +1,59 @@
-# CF-Contest-Problem-Scrapper
+# Codeforces Contest Markdown Scraper
 
-CF-Contest-Problem-Scrapper is a JavaScript-based tool designed to scrape contest problems from Codeforces During the Contest. This tool helps users to collect and organize problems from various contests for easy access and analysis.
+This project downloads Codeforces contest problems together with their linked tutorials and stores every pair as a Markdown document. Each generated file contains:
 
-## Features
+- Contest metadata (name, limits and IO format)
+- A cleaned version of the problem statement
+- Input and output specifications
+- All sample tests with fenced code blocks
+- The official tutorial (when a link is published on the problem page)
 
-- Scrape contest problems from Codeforces.
-- Organize and save problem data in a structured format.
+The tool works with the public Codeforces website, but it can also operate in an offline mode that consumes pre-downloaded HTML snapshots. The repository contains an example snapshot and its generated Markdown output so you can see a successful run without external network access.
+
+## Installation
+
+The CLI runs with Node.js (>= 18). Install the dependencies once:
+
+```bash
+npm install
+```
 
 ## Usage
 
-To use the CF-Contest-Problem-Scrapper, run the following command:
+Download every problem from a contest and write Markdown files into the `output` directory:
 
-##### cmd :
-```sh
-npx cf-contest
+```bash
+node script.js 1971
 ```
 
-##### Example : 
-```
-npx cf-contest
-Enter Contest ID : 2026        //contest-id available in contest URL
-Your Name :- manish-dev        //name
-```
+Key options:
 
-# Folder Structure for Contest
+- `-o, --output <dir>` – change the target directory (default: `output`).
+- `-b, --base-url <url>` – use a different Codeforces mirror.
+- `--offline-dir <dir>` – read HTML from a local folder instead of making HTTP requests.
+- `-v, --verbose` – print progress information for every problem.
 
-Below is the folder structure for organizing contest problems and their respective files.
+The command exits with a non-zero status code if the contest cannot be downloaded or a problem is missing its statement.
 
-```
-contest-name/
-│
-├── A/
-│   ├── input.in
-│   ├── output.out
-│   ├── expected.out
-│   ├── problemstatement.txt
-│   └── solution.cpp
-│
-├── B/
-│   ├── input.in
-│   ├── output.out
-│   ├── expected.out
-│   ├── problemstatement.txt
-│   └── solution.cpp
-│
-├── C/
-│   ├── input.in
-│   ├── output.out
-│   ├── expected.out
-│   ├── problemstatement.txt
-│   └── solution.cpp
-│
-└── ...
+## Offline fixtures and example output
+
+The repository ships with a minimal offline fixture under `fixtures/beta_round_1`. It contains HTML snapshots of **Codeforces Beta Round #1** problem A and its official tutorial. Running the scraper on that fixture produces the Markdown file stored at `output/1-Codeforces Beta Round #1/A-theatre-square.md`.
+
+To reproduce the example:
+
+```bash
+node script.js 1 --offline-dir fixtures/beta_round_1 --output output --verbose
 ```
 
-## Explanation
-1. **`contest-name/`**  
-   The root folder representing the name of the contest.  
+The command above was executed to generate the committed sample Markdown file.
 
-2. **`A/`, `B/`, `C/`**  
-   Subdirectories named after individual contest problems.  
+## Project structure
 
-3. **Files in Each Problem Directory**  
-   - **`input.in`**: The input file for the problem.  
-   - **`output.out`**: The generated output after running the solution.  
-   - **`expected.out`**: The expected correct output for comparison.  
-   - **`problemstatement.txt`**: The text file containing the problem statement.  
-   - **`solution.cpp`**: The solution code written in C++.  
+```
+output/
+└── <contest id>-<contest name>/
+    └── <problem index>-<problem-name>.md
+```
 
-Add additional problem folders as needed using the same structure (`D/`, `E/`, etc.).  
+Each Markdown document includes the tutorial text at the end. If a problem does not provide a tutorial link, the scraper adds a placeholder message so the absence is explicit.
+
