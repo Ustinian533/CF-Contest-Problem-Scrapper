@@ -1,49 +1,39 @@
 #!/usr/bin/env node
 
 const { Command } = require('commander');
-const contestDetails = require('./src/contestDetails.js');
 const chalk = require('chalk');
-const program = new Command();
-const readline = require('node:readline');
+const contestDetails = require('./src/contestDetails');
 
+async function main() {
+    const program = new Command();
 
-const question = [`Enter Contest ID : `, `CodeForces userName :- `];
-let userName = "";
-let id = 0;
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
-
-async function askQuestion(index) {
-    if (index === 1) {
-        rl.question(question[index], (name) => {
-            userName = name;
-            rl.close();
-            contestDetails(id, name);
-            fetch(
-                'https://cf-contest.onrender.com/api/details', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        "user": name,
-                        "contestId": id
-                    }),
-                    headers: {
-                        'Content-type': 'application/json; charset=UTF-8',
-                    },
+    program
+        .name('cf-contest')
+        .description('Download Codeforces contest problems and tutorials as Markdown files')
+        .argument('<contestId>', 'Contest identifier, e.g. 1971')
+        .option('-o, --output <directory>', 'Directory where the Markdown files will be stored', 'output')
+        .option('-b, --base-url <url>', 'Base URL of Codeforces instance', 'https://codeforces.com')
+        .option('--offline-dir <directory>', 'Use pre-downloaded HTML files from the provided directory instead of making network requests')
+        .option('-v, --verbose', 'Enable verbose logging')
+        .action(async (contestId, options) => {
+            try {
+                const { contestName, contestFolder, summary } = await contestDetails(contestId, {
+                    baseUrl: options.baseUrl,
+                    offlineDir: options.offlineDir,
+                    outputDir: options.output,
+                    verbose: options.verbose,
                 });
+
+                console.log(chalk.green(`\nSaved ${summary.length} problem(s) for ${contestName}`));
+                console.log(chalk.green(`Output directory: ${contestFolder}`));
+            } catch (error) {
+                console.error(chalk.red(error.message));
+                process.exitCode = 1;
+            }
         });
-        return;
-    }
-    rl.question(question[index], (Id) => {
-        Id = parseInt(Id);
-        if (isNaN(Id)) {
-            console.log(chalk.red("Invalid Contest ID"));
-            askQuestion(index);
-        } else {
-            id = Id;
-            askQuestion(index + 1);
-        }
-    });
+
+    await program.parseAsync(process.argv);
 }
-askQuestion(0);
+
+main();
+
