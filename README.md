@@ -54,6 +54,7 @@ node script.js 1971 --offline-dir fixtures/round_1971 --output output --verbose
 
 The commands above were executed to generate the committed sample Markdown files for both contests.
 
+
 ## Project structure
 
 ```
